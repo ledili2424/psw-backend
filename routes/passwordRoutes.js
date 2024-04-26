@@ -99,7 +99,7 @@ router.post("/share-request", verifyUser, async (req, res) => {
         message: "User not found!",
       });
     }
-    const passwordInfo = await PasswordInfo.findOne({ url });
+    const passwordInfo = await PasswordInfo.findOne({ url, user: req.id });
     if (!passwordInfo) {
       return res.status(404).json({
         message: "Password not found!",
@@ -135,7 +135,11 @@ router.get("/shared", verifyUser, async (req, res) => {
         }
         const userId = password.user;
         const { username } = await User.findOne({ _id: userId });
-        return { ...password._doc, senderName: username };
+        return {
+          ...password._doc,
+          senderName: username,
+          requestId: request._id,
+        };
       })
     );
 
